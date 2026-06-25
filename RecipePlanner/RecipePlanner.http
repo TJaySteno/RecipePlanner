@@ -1,0 +1,3 @@
+@RecipePlanner_HostAddress = http://localhost:5269
+
+GET {{RecipePlanner_HostAddress}}
