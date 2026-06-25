@@ -24,20 +24,15 @@ app.UseAuthorization();
 app.MapControllers();
 */
 
+using RecipePlanner.Endpoints;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddValidation();
+
 var app = builder.Build();
 
-// GET /
-app.MapGet("/", () => "Hello World!"); // If not authenticated, redirect to /login. If authenticated, / shows nav options.
-
-// GET /login
-app.MapGet("/login", () => "Hello World!");
-
-// GET /recipe
-app.MapGet("/recipe", () => "Recipe menu here.");
-app.MapGet("/recipe/{id}", (int id) => $"Recipe id {id} here.");
-
-// GET /user
-app.MapGet("/user/{id}", (int id) => $"Hello, user {id}!");
+app.MapRecipesEndpoints();
+app.MapUsersEndpoints();
 
 app.Run();

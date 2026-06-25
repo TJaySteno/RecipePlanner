@@ -1,3 +1,54 @@
 @RecipePlanner_HostAddress = http://localhost:5269
 
 GET {{RecipePlanner_HostAddress}}
+
+###
+GET {{RecipePlanner_HostAddress}}/recipes
+
+###
+GET {{RecipePlanner_HostAddress}}/recipes/1
+
+###
+POST {{RecipePlanner_HostAddress}}/recipes
+Content-Type: application/json
+
+{
+  "userID": 1,
+  "name": "Punkin Pie",
+  "description": "A classic homemade pumpkin pie made with a smooth spiced pumpkin filling, baked in a flaky crust, and perfect for holiday gatherings or cozy fall desserts.",
+  "url": "https://example.com/recipes/pumpkin-pie",
+  "rating": 4.8,
+  "difficulty": 2,
+  "prepTimeInMinutes": 25,
+  "cookTimeInMinutes": 55,
+  "coolTimeInMinutes": 120,
+  "servings": 8,
+  "calories": 320,
+  "proteinInGrams": 6,
+  "carbsInGrams": 42,
+  "fatInGrams": 14
+}
+
+###
+PUT {{RecipePlanner_HostAddress}}/recipes/1
+Content-Type: application/json
+
+{
+  "userID": 1,
+  "name": "Vegan Chili",
+  "description": "A spicy, vegan stew with beans.",
+  "url": "https://example.com/chili",
+  "rating": 5.0,
+  "difficulty": 2,
+  "prepTimeInMinutes": 25,
+  "cookTimeInMinutes": 55,
+  "coolTimeInMinutes": 120,
+  "servings": 8,
+  "calories": 320,
+  "proteinInGrams": 6,
+  "carbsInGrams": 42,
+  "fatInGrams": 14
+}
+
+###
+DELETE {{RecipePlanner_HostAddress}}/recipes/2

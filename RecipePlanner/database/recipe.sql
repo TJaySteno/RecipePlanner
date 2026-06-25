@@ -4,8 +4,8 @@ IF OBJECT_ID('recipe', 'U') IS NOT NULL DROP TABLE recipe;
 
 CREATE TABLE recipe (
 	recipe_id INT IDENTITY(1,1) PRIMARY KEY,
+
 	app_user_id INT NOT NULL,
-	
 	recipe_name VARCHAR(50) NOT NULL,
 	description VARCHAR(255) NULL,
 	url VARCHAR(255) NULL,
@@ -16,9 +16,9 @@ CREATE TABLE recipe (
 	cool_time_in_minutes INT NULL,	
 	servings INT NULL,
 	calories INT NULL,
-	fat_in_grams INT NULL,
 	carbohydrates_in_grams INT NULL,
 	protein_in_grams INT NULL,
+	fat_in_grams INT NULL,
 
 	created_on DATETIME NOT NULL DEFAULT GETUTCDATE(),
 	modified_on DATETIME NOT NULL DEFAULT GETUTCDATE(),
