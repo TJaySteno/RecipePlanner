@@ -7,7 +7,7 @@ namespace RecipePlanner.Dtos;
 // a shared agreement about how data wil be transferred and used.
 
 public record RecipeDto (
-    [Required] int ID,
+    [Required] int RecipeID,
     [Required] int OwnerID,
     [Required][StringLength(50)] string Name,
     [StringLength(50)] string Description,

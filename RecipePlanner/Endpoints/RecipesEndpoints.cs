@@ -6,31 +6,19 @@ public static class RecipesEndpoints
 {
     const string GetRecipeRouteName = "GetRecipe";
 
-    // REGION: DUMMY DATA
-    private static readonly List<RecipeDto> recipes = CreateDummyRecipes();
-
-    private static List<RecipeDto> CreateDummyRecipes()
-    {
-        return
-        [
-            new(1, 1, "Chili", "A spicy stew with beans and meat.", "https://example.com/chili", 4.5f, 2, 30, 60, 0, 4, 400, 20, 50, 10),
-            new(2, 1, "Pasta", "A classic Italian dish with tomato sauce.", "https://example.com/pasta", 4.0f, 1, 15, 30, 0, 2, 300, 10, 60, 5),
-            new(3, 1, "Salad", "A fresh mix of vegetables and dressing.", "https://example.com/salad", 4.2f, 1, 10, 0, 0, 2, 150, 5, 20, 5)
-        ];
-    }
-    // ENDREGION: DUMMY DATA
+    private static readonly List<RecipeDto> recipes = new List<RecipeDto>();
 
     public static void MapRecipesEndpoints(this WebApplication app)
     {
         var recipesGroup = app.MapGroup("/recipes");
 
         // GET /recipes
-        recipesGroup.MapGet("", () => recipes);
+        recipesGroup.MapGet("/", () => recipes);
 
         // GET /recipes/{id}
         recipesGroup.MapGet("/{id}", (int id) =>
             {
-                var recipe = recipes.Find(r => r.ID == id);
+                var recipe = recipes.Find(recipe => recipe.RecipeID == id);
 
                 return recipe is null ? Results.NotFound() : Results.Ok(recipe);
             })
@@ -40,8 +28,8 @@ public static class RecipesEndpoints
         recipesGroup.MapPost("", (CreateRecipeDto newRecipe) =>
             {
                 RecipeDto recipe = new(
-                    recipes.Max(recipe => recipe.ID) + 1,
-                    newRecipe.UserID,
+                    recipes.Max(recipe => recipe.RecipeID) + 1,
+                    newRecipe.OwnerID,
                     newRecipe.Name,
                     newRecipe.Description,
                     newRecipe.Url,
@@ -59,22 +47,22 @@ public static class RecipesEndpoints
 
                 recipes.Add(recipe);
 
-                return Results.CreatedAtRoute(GetRecipeRouteName, new { id = recipe.ID }, recipe);
+                return Results.CreatedAtRoute(GetRecipeRouteName, new { id = recipe.RecipeID }, recipe);
             });
 
         // PUT /recipes/{id}
         recipesGroup.MapPut("/{id}", (int id, UpdateRecipeDto updatedRecipe) =>
             {
-                var index = recipes.FindIndex(recipe => recipe.ID == id);
+                var index = recipes.FindIndex(recipe => recipe.RecipeID == id);
 
                 if (index == -1)
                 {
                     return Results.NotFound();
                 }
 
-                recipes[index] = new RecipeDto(
+                recipes[index] = new RecipeDto (
                     id,
-                    updatedRecipe.UserID,
+                    updatedRecipe.OwnerID,
                     updatedRecipe.Name,
                     updatedRecipe.Description,
                     updatedRecipe.Url,
@@ -97,11 +85,9 @@ public static class RecipesEndpoints
         recipesGroup.MapDelete("/{id}", (int id) =>
             {
                 // Todo: Do I want a soft delete option?
-                recipes.RemoveAll(recipe => recipe.ID == id);
+                recipes.RemoveAll(recipe => recipe.RecipeID == id);
 
                 return Results.NoContent();
             });
-
-        // ENDREGION: ENDPOINTS
     }
 }

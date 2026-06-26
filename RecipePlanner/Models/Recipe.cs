@@ -2,11 +2,11 @@
 
 public class Recipe
 {
-    public int ID { get; set; }
-    public required string OwnerID { get; set; }
+    public int RecipeID { get; set; }
+    public required int OwnerID { get; set; } // Todo: Change this to "User Owner" later on. Will need to update all Recipe instances.
     public required string Name { get; set; }
-    public string Description { get; set; }
-    public string Url { get; set; }
+    public string? Description { get; set; }
+    public string? Url { get; set; }
     public float Rating { get; set; }
     public int Difficulty { get; set; }
     public int PrepTimeInMinutes { get; set; }

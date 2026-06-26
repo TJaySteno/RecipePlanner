@@ -1,0 +1,12 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RecipePlanner.Dtos;
+
+public record CreateUserDto (
+    [StringLength(100)] string FirstName,
+    [StringLength(100)] string MiddleName,
+    [StringLength(100)] string LastName,
+    [Required][StringLength(255)] string PrimaryEmail,
+    [Required][StringLength(100)] string Username,
+    [Required][StringLength(255)] string PasswordHash
+);

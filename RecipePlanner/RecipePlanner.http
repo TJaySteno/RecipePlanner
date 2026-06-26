@@ -52,3 +52,61 @@ Content-Type: application/json
 
 ###
 DELETE {{RecipePlanner_HostAddress}}/recipes/2
+
+###
+GET {{RecipePlanner_HostAddress}}/users/1
+
+###
+POST {{RecipePlanner_HostAddress}}/users
+Content-Type: application/json
+
+{
+  "firstName": "Luke",
+  "middleName": "Anakin",
+  "lastName": "Skywalker",
+  "primaryEmail": "lskywalker@email.com",
+  "username": "lskywalker",
+  "passwordHash": "placeholder"
+}
+
+###
+POST {{RecipePlanner_HostAddress}}/users
+Content-Type: application/json
+
+{
+  "firstName": "Sansa",
+  "middleName": null,
+  "lastName": "Stark",
+  "primaryEmail": "sstark@winterfell.com",
+  "username": "sstark",
+  "passwordHash": "placeholder"
+}
+
+###
+POST {{RecipePlanner_HostAddress}}/users
+Content-Type: application/json
+
+{
+  "firstName": "Jon",
+  "middleName": "Aegon",
+  "lastName": "Snow",
+  "primaryEmail": "bastardsword@thewall.com",
+  "username": "jsnow",
+  "passwordHash": "placeholder"
+}
+
+###
+PUT {{RecipePlanner_HostAddress}}/users/1
+Content-Type: application/json
+
+{
+    "firstName": "Luke",
+    "middleName": "",
+    "lastName": "Skywalker",
+    "primaryEmail": "iAmAJediLikeMyFather@email.com",
+    "username": "lskywalker",
+    "passwordHash": "placeholder"
+}
+
+###
+DELETE {{RecipePlanner_HostAddress}}/users/2

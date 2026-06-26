@@ -3,7 +3,7 @@
 namespace RecipePlanner.Dtos;
 
 public record UpdateRecipeDto(
-    [Required] int UserID,
+    [Required] int OwnerID,
     [Required][StringLength(50)] string Name,
     [StringLength(50)] string Description,
     [StringLength(50)] string Url,

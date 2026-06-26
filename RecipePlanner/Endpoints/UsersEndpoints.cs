@@ -1,30 +1,81 @@
-﻿namespace RecipePlanner.Endpoints;
+﻿using RecipePlanner.Dtos;
+
+namespace RecipePlanner.Endpoints;
 
 public static class UsersEndpoints
 {
-    // REGION: DUMMY DATA
-    //private static readonly List<RecipeDto> recipes = [
-    //    new(1, "Chili", "A spicy stew with beans and meat.", "https://example.com/chili", 4.5f, 2, 30, 60, 0, 4, 400, 20, 50, 10),
-    //    new(2, "Pasta", "A classic Italian dish with tomato sauce.", "https://example.com/pasta", 4.0f, 1, 15, 30, 0, 2, 300, 10, 60, 5),
-    //    new(3, "Salad", "A fresh mix of vegetables and dressing.", "https://example.com/salad", 4.2f, 1, 10, 0, 0, 2, 150, 5, 20, 5)
-    //];
-    //recipes.RemoveAll(recipe => recipe.ID > 3);
-    // ENDREGION: DUMMY DATA
+    const string GetUserRouteName = "GetUser";
+
+    private static readonly List<UserDto> users = new List<UserDto>();
 
     public static void MapUsersEndpoints(this WebApplication app)
     {
-        // GET /
-        app.MapGet("/", () => "Hello World!");
+        var usersGroup = app.MapGroup("/users");
 
-        // If not authenticated, redirect to /login. If authenticated, / shows nav options.
+        // GET /users
+        //usersGroup.MapGet("/", () => users);
+
+        // Redirect to either /login or /users/{id}
         // ApiController.RedirectToRoute(String, Object) Method
         // https://learn.microsoft.com/en-us/dotnet/api/system.web.http.apicontroller.redirecttoroute?view=aspnetcore-2.2
 
-        // GET /login
-        app.MapGet("/login", () => "Login screen.");
+        // GET /users/{id}
+        usersGroup.MapGet("/{id}", (int id) =>
+            {
+                var user = users.Find(user => user.UserID == id);
 
+                return user is null ? Results.NotFound() : Results.Ok(user);
+            })
+            .WithName(GetUserRouteName);
 
-        // GET /user
-        app.MapGet("/users/{id}", (int id) => $"Hello, user {id}!");
+        // POST /users
+        usersGroup.MapPost("", (CreateUserDto newUser) =>
+        {
+            UserDto user = new (
+                users.Max(user => user.UserID) + 1,
+                newUser.FirstName,
+                newUser.MiddleName,
+                newUser.LastName,
+                newUser.PrimaryEmail,
+                newUser.Username,
+                newUser.PasswordHash
+            );
+
+            users.Add(user);
+
+            return Results.CreatedAtRoute(GetUserRouteName, new { id = user.UserID }, user);
+        });
+
+        // PUT /users/{id}
+        usersGroup.MapPut("/{id}", (int id, UpdateUserDto updatedUser) =>
+        {
+            var index = users.FindIndex(user => user.UserID == id);
+
+            if (index == -1)
+            {
+                return Results.NotFound();
+            }
+
+            users[index] = new UserDto (
+                id,
+                updatedUser.FirstName,
+                updatedUser.MiddleName,
+                updatedUser.LastName,
+                updatedUser.PrimaryEmail,
+                updatedUser.Username,
+                users[index].PasswordHash
+            );
+
+            return Results.NoContent();
+        });
+
+        // DELETE /users/{id}
+        usersGroup.MapDelete("/{id}", (int id) =>
+        {
+            // Todo: Do I want a soft delete option?
+            users.RemoveAll(user => user.UserID == id);
+
+            return Results.NoContent();
+        });
     }
 }
