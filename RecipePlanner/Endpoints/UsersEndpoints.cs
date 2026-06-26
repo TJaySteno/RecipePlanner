@@ -1,6 +1,4 @@
-﻿using RecipePlanner.Dtos;
-
-namespace RecipePlanner.Endpoints;
+﻿namespace RecipePlanner.Endpoints;
 
 public static class UsersEndpoints
 {

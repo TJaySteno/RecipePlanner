@@ -8,7 +8,7 @@ namespace RecipePlanner.Dtos;
 
 public record RecipeDto (
     [Required] int ID,
-    [Required] int UserID,
+    [Required] int OwnerID,
     [Required][StringLength(50)] string Name,
     [StringLength(50)] string Description,
     [StringLength(50)] string Url,

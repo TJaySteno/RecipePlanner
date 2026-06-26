@@ -1,5 +1,24 @@
+using RecipePlanner.Data;
+using RecipePlanner.Endpoints;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddValidation();
+
+var connString = "Server=localhost;Database=RecipePlanner;Trusted_Connection=True;TrustServerCertificate=True";
+builder.Services.AddSqlServer<RecipePlannerContext>(connString);
+
+var app = builder.Build();
+
+app.MapRecipesEndpoints();
+app.MapUsersEndpoints();
+
+app.MigrateDb();
+
+app.Run();
+
 /*
-All of this came with the default build. Leaving for now.
+All of this came with the default build. Leaving for now so I can reference back to it later.
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,16 +42,3 @@ app.UseAuthorization();
 
 app.MapControllers();
 */
-
-using RecipePlanner.Endpoints;
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddValidation();
-
-var app = builder.Build();
-
-app.MapRecipesEndpoints();
-app.MapUsersEndpoints();
-
-app.Run();
