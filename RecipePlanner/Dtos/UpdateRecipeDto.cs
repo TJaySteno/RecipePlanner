@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace RecipePlanner.Dtos;
 
 public record UpdateRecipeDto(
-    [Required] User Owner,
+    [Required] int OwnerID,
     [Required][StringLength(50)] string Name,
     [StringLength(255)] string? Description,
     [StringLength(255)] string? Url,

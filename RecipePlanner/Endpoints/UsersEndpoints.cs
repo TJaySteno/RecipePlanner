@@ -1,4 +1,6 @@
-﻿using RecipePlanner.Dtos;
+﻿using RecipePlanner.Data;
+using RecipePlanner.Dtos;
+using RecipePlanner.Models;
 
 namespace RecipePlanner.Endpoints;
 
@@ -12,66 +14,92 @@ public static class UsersEndpoints
     {
         var usersGroup = app.MapGroup("/users");
 
-        // GET /users
-        //usersGroup.MapGet("/", () => users);
+        //GET /users
+        usersGroup.MapGet("/", (RecipePlannerContext dbContext) => dbContext.Users);
 
         // Redirect to either /login or /users/{id}
         // ApiController.RedirectToRoute(String, Object) Method
         // https://learn.microsoft.com/en-us/dotnet/api/system.web.http.apicontroller.redirecttoroute?view=aspnetcore-2.2
 
         // GET /users/{id}
-        usersGroup.MapGet("/{id}", (int id) =>
-            {
-                var user = users.Find(user => user.UserID == id);
+        usersGroup.MapGet("/{id}", (int id, RecipePlannerContext dbContext) =>
+        {
+            var user = dbContext.Users.Find(id);
 
-                return user is null ? Results.NotFound() : Results.Ok(user);
-            })
-            .WithName(GetUserRouteName);
+            return user is null
+                ? Results.NotFound()
+                : Results.Ok(user);
+        })
+        .WithName(GetUserRouteName);
 
         // POST /users
-        usersGroup.MapPost("", (CreateUserDto newUser) =>
+        usersGroup.MapPost("", (CreateUserDto newUser, RecipePlannerContext dbContext) =>
         {
-            UserDto user = new (
-                users.Max(user => user.UserID) + 1,
-                newUser.PrimaryEmail,
-                newUser.Username,
-                newUser.FirstName,
-                newUser.MiddleName,
-                newUser.LastName
+            User user = new()
+            {
+                PrimaryEmail = newUser.PrimaryEmail,
+                Username = newUser.Username,
+                PasswordHash = newUser.PasswordHash,
+                FirstName = newUser.FirstName,
+                MiddleName = newUser.MiddleName,
+                LastName = newUser.LastName
+            };
+
+            dbContext.Users.Add(user);
+            dbContext.SaveChanges();
+
+            UserDto userDto = new(
+                user.UserID,
+                user.PrimaryEmail,
+                user.Username,
+                user.FirstName,
+                user.MiddleName,
+                user.LastName
             );
 
-            users.Add(user);
-
-            return Results.CreatedAtRoute(GetUserRouteName, new { id = user.UserID }, user);
+            return Results.CreatedAtRoute(GetUserRouteName, new { id = userDto.UserID }, userDto);
         });
 
         // PUT /users/{id}
-        usersGroup.MapPut("/{id}", (int id, UpdateUserDto updatedUser) =>
+        usersGroup.MapPut("/{id}", (int id, UpdateUserDto updatedUser, RecipePlannerContext dbContext) =>
         {
-            var index = users.FindIndex(user => user.UserID == id);
+            var user = dbContext.Users.Find(id);
 
-            if (index == -1)
+            if (user == null)
             {
                 return Results.NotFound();
             }
 
-            users[index] = new UserDto (
-                id,
-                updatedUser.PrimaryEmail,
-                updatedUser.Username,
-                updatedUser.FirstName,
-                updatedUser.MiddleName,
-                updatedUser.LastName
-            );
+            user.PrimaryEmail = updatedUser.PrimaryEmail;
+            user.Username = updatedUser.Username;
+            user.FirstName = updatedUser.FirstName;
+            user.MiddleName = updatedUser.MiddleName;
+            user.LastName = updatedUser.LastName;
+            
+            dbContext.SaveChanges();
 
             return Results.NoContent();
         });
 
         // DELETE /users/{id}
-        usersGroup.MapDelete("/{id}", (int id) =>
+        usersGroup.MapDelete("/{id}", (int id, RecipePlannerContext dbContext) =>
         {
-            // Todo: Do I want a soft delete option?
-            users.RemoveAll(user => user.UserID == id);
+            var user = dbContext.Users.Find(id);
+
+            if (user is null)
+            {
+                return Results.NotFound();
+            }
+
+            bool recipes = dbContext.Recipes.All((Recipe recipe) => recipe.Owner.UserID == id);
+
+            if (recipes == true)
+            {
+                return Results.BadRequest("This user still owns recipes. Delete those first.");
+            }
+
+            dbContext.Users.Remove(user);
+            dbContext.SaveChanges();
 
             return Results.NoContent();
         });

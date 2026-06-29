@@ -13,7 +13,7 @@ POST {{RecipePlanner_HostAddress}}/recipes
 Content-Type: application/json
 
 {
-  "userID": 1,
+  "ownerID": 1,
   "name": "Punkin Pie",
   "description": "A classic homemade pumpkin pie made with a smooth spiced pumpkin filling, baked in a flaky crust, and perfect for holiday gatherings or cozy fall desserts.",
   "url": "https://example.com/recipes/pumpkin-pie",
@@ -34,7 +34,7 @@ PUT {{RecipePlanner_HostAddress}}/recipes/1
 Content-Type: application/json
 
 {
-  "userID": 1,
+  "ownerID": 1,
   "name": "Vegan Chili",
   "description": "A spicy, vegan stew with beans.",
   "url": "https://example.com/chili",
@@ -51,48 +51,28 @@ Content-Type: application/json
 }
 
 ###
-DELETE {{RecipePlanner_HostAddress}}/recipes/2
+DELETE {{RecipePlanner_HostAddress}}/recipes/6
 
 ###
-GET {{RecipePlanner_HostAddress}}/users/1
+GET {{RecipePlanner_HostAddress}}/recipes
 
 ###
-POST {{RecipePlanner_HostAddress}}/users
-Content-Type: application/json
+GET {{RecipePlanner_HostAddress}}/users
 
-{
-  "firstName": "Luke",
-  "middleName": "Anakin",
-  "lastName": "Skywalker",
-  "primaryEmail": "lskywalker@email.com",
-  "username": "lskywalker",
-  "passwordHash": "placeholder"
-}
+###
+GET {{RecipePlanner_HostAddress}}/users/3
 
 ###
 POST {{RecipePlanner_HostAddress}}/users
 Content-Type: application/json
 
 {
-  "firstName": "Sansa",
-  "middleName": null,
-  "lastName": "Stark",
-  "primaryEmail": "sstark@winterfell.com",
-  "username": "sstark",
-  "passwordHash": "placeholder"
-}
-
-###
-POST {{RecipePlanner_HostAddress}}/users
-Content-Type: application/json
-
-{
-  "firstName": "Jon",
-  "middleName": "Aegon",
-  "lastName": "Snow",
-  "primaryEmail": "bastardsword@thewall.com",
-  "username": "jsnow",
-  "passwordHash": "placeholder"
+  "primaryEmail": "hpotter@hogwarts.uk",
+  "username": "hpotter",
+  "passwordHash": "placeholder",
+  "firstName": "Harry",
+  "middleName": "James",
+  "lastName": "Potter"
 }
 
 ###
@@ -100,13 +80,18 @@ PUT {{RecipePlanner_HostAddress}}/users/1
 Content-Type: application/json
 
 {
-    "firstName": "Luke",
-    "middleName": "",
-    "lastName": "Skywalker",
     "primaryEmail": "iAmAJediLikeMyFather@email.com",
     "username": "lskywalker",
-    "passwordHash": "placeholder"
+    "firstName": "Luke",
+    "middleName": "",
+    "lastName": "Skywalker"
 }
 
 ###
-DELETE {{RecipePlanner_HostAddress}}/users/2
+DELETE {{RecipePlanner_HostAddress}}/users/6
+
+###
+DELETE {{RecipePlanner_HostAddress}}/users/1
+
+###
+GET {{RecipePlanner_HostAddress}}/users
