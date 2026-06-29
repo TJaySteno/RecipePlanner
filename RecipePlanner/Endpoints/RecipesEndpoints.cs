@@ -14,27 +14,64 @@ public static class RecipesEndpoints
         var recipesGroup = app.MapGroup("/recipes");
 
         // GET /recipes
-        recipesGroup.MapGet("/", (RecipePlannerContext dbContext) =>
-            dbContext.Recipes
-                .Include(recipe => recipe.Owner)
-                .ToList()
-        );
+        recipesGroup.MapGet("/", async (RecipePlannerContext dbContext) =>
+            await dbContext.Recipes
+                            .Include(recipe => recipe.Owner)
+                            .Select(recipe => new RecipeDto(
+                                    recipe.RecipeID,
+                                    recipe.Owner,
+                                    recipe.Name,
+                                    recipe.Description,
+                                    recipe.Url,
+                                    recipe.Rating,
+                                    recipe.Difficulty,
+                                    recipe.PrepTimeInMinutes,
+                                    recipe.CookTimeInMinutes,
+                                    recipe.CoolTimeInMinutes,
+                                    recipe.Servings,
+                                    recipe.Calories,
+                                    recipe.ProteinInGrams,
+                                    recipe.CarbsInGrams,
+                                    recipe.FatInGrams
+                            ))
+                            .AsNoTracking()
+                            .ToListAsync());
 
         // GET /recipes/{id}
-        recipesGroup.MapGet("/{id}", (int id, RecipePlannerContext dbContext) =>
+        recipesGroup.MapGet("/{id}", async (int id, RecipePlannerContext dbContext) =>
         {
-            var recipe = dbContext.Recipes.Find(id);
+            var recipe = await dbContext.Recipes
+                .Include(recipe => recipe.Owner)
+                .FirstOrDefaultAsync(recipe => recipe.RecipeID == id);
 
             return recipe is null
                 ? Results.NotFound()
-                : Results.Ok(recipe);
+                : Results.Ok(
+                    new RecipeDetailsDto(
+                        recipe.RecipeID,
+                        recipe.Owner.UserID,
+                        recipe.Name,
+                        recipe.Description,
+                        recipe.Url,
+                        recipe.Rating,
+                        recipe.Difficulty,
+                        recipe.PrepTimeInMinutes,
+                        recipe.CookTimeInMinutes,
+                        recipe.CoolTimeInMinutes,
+                        recipe.Servings,
+                        recipe.Calories,
+                        recipe.ProteinInGrams,
+                        recipe.CarbsInGrams,
+                        recipe.FatInGrams
+                    )
+                );
         })
         .WithName(GetRecipeRouteName);
 
         // POST /recipes
-        recipesGroup.MapPost("", (CreateRecipeDto newRecipe, RecipePlannerContext dbContext) =>
+        recipesGroup.MapPost("", async (CreateRecipeDto newRecipe, RecipePlannerContext dbContext) =>
         {
-            User? owner = dbContext.Users.Find(newRecipe.OwnerID);
+            User? owner = await dbContext.Users.FindAsync(newRecipe.OwnerID);
             
             if (owner == null)
             {
@@ -60,7 +97,7 @@ public static class RecipesEndpoints
             };
 
             dbContext.Recipes.Add(recipe);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             RecipeDetailsDto recipeDto = new(
                 recipe.RecipeID,
@@ -84,14 +121,14 @@ public static class RecipesEndpoints
         });
 
         // PUT /recipes/{id}
-        recipesGroup.MapPut("/{id}", (
+        recipesGroup.MapPut("/{id}", async (
             int id,
             UpdateRecipeDto updatedRecipe,
             RecipePlannerContext dbContext) =>
         {
-            var recipe = dbContext.Recipes.Find(id);
+            var recipe = await dbContext.Recipes.FindAsync(id);
 
-            User? owner = dbContext.Users.Find(updatedRecipe.OwnerID);
+            User? owner = await dbContext.Users.FindAsync(updatedRecipe.OwnerID);
 
             if (owner == null)
             {
@@ -118,23 +155,17 @@ public static class RecipesEndpoints
             recipe.CarbsInGrams = updatedRecipe.CarbsInGrams;
             recipe.FatInGrams = updatedRecipe.FatInGrams;
 
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             return Results.NoContent();
         });
 
         // DELETE /recipes/{id}
-        recipesGroup.MapDelete("/{id}", (int id, RecipePlannerContext dbContext) =>
+        recipesGroup.MapDelete("/{id}", async (int id, RecipePlannerContext dbContext) =>
         {
-            var recipe = dbContext.Recipes.Find(id);
-
-            if (recipe is null)
-            {
-                return Results.NotFound();
-            }
-
-            dbContext.Recipes.Remove(recipe);
-            dbContext.SaveChanges();
+            await dbContext.Recipes
+                            .Where(recipe => recipe.RecipeID == id)
+                            .ExecuteDeleteAsync();
 
             return Results.NoContent();
         });

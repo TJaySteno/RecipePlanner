@@ -51,7 +51,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE {{RecipePlanner_HostAddress}}/recipes/6
+DELETE {{RecipePlanner_HostAddress}}/recipes/4
 
 ###
 GET {{RecipePlanner_HostAddress}}/recipes

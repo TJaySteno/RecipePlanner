@@ -1,4 +1,5 @@
-﻿using RecipePlanner.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using RecipePlanner.Data;
 using RecipePlanner.Dtos;
 using RecipePlanner.Models;
 
@@ -8,23 +9,31 @@ public static class UsersEndpoints
 {
     const string GetUserRouteName = "GetUser";
 
-    private static readonly List<UserDto> users = new List<UserDto>();
-
     public static void MapUsersEndpoints(this WebApplication app)
     {
         var usersGroup = app.MapGroup("/users");
 
         //GET /users
-        usersGroup.MapGet("/", (RecipePlannerContext dbContext) => dbContext.Users);
+        usersGroup.MapGet("/", async (RecipePlannerContext dbContext) =>
+            await dbContext.Users
+                            .Select(user => new UserDto(
+                                user.UserID,
+                                user.PrimaryEmail,
+                                user.Username,
+                                user.FirstName,
+                                user.MiddleName,
+                                user.LastName
+                            ))
+                            .ToListAsync());
 
         // Redirect to either /login or /users/{id}
         // ApiController.RedirectToRoute(String, Object) Method
         // https://learn.microsoft.com/en-us/dotnet/api/system.web.http.apicontroller.redirecttoroute?view=aspnetcore-2.2
 
         // GET /users/{id}
-        usersGroup.MapGet("/{id}", (int id, RecipePlannerContext dbContext) =>
+        usersGroup.MapGet("/{id}", async (int id, RecipePlannerContext dbContext) =>
         {
-            var user = dbContext.Users.Find(id);
+            var user = await dbContext.Users.FindAsync(id);
 
             return user is null
                 ? Results.NotFound()
@@ -33,7 +42,7 @@ public static class UsersEndpoints
         .WithName(GetUserRouteName);
 
         // POST /users
-        usersGroup.MapPost("", (CreateUserDto newUser, RecipePlannerContext dbContext) =>
+        usersGroup.MapPost("", async (CreateUserDto newUser, RecipePlannerContext dbContext) =>
         {
             User user = new()
             {
@@ -46,7 +55,7 @@ public static class UsersEndpoints
             };
 
             dbContext.Users.Add(user);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             UserDto userDto = new(
                 user.UserID,
@@ -61,9 +70,9 @@ public static class UsersEndpoints
         });
 
         // PUT /users/{id}
-        usersGroup.MapPut("/{id}", (int id, UpdateUserDto updatedUser, RecipePlannerContext dbContext) =>
+        usersGroup.MapPut("/{id}", async (int id, UpdateUserDto updatedUser, RecipePlannerContext dbContext) =>
         {
-            var user = dbContext.Users.Find(id);
+            var user = dbContext.Users.FindAsync(id).Result;
 
             if (user == null)
             {
@@ -75,31 +84,18 @@ public static class UsersEndpoints
             user.FirstName = updatedUser.FirstName;
             user.MiddleName = updatedUser.MiddleName;
             user.LastName = updatedUser.LastName;
-            
-            dbContext.SaveChanges();
+
+            await dbContext.SaveChangesAsync();
 
             return Results.NoContent();
         });
 
         // DELETE /users/{id}
-        usersGroup.MapDelete("/{id}", (int id, RecipePlannerContext dbContext) =>
+        usersGroup.MapDelete("/{id}", async (int id, RecipePlannerContext dbContext) =>
         {
-            var user = dbContext.Users.Find(id);
-
-            if (user is null)
-            {
-                return Results.NotFound();
-            }
-
-            bool recipes = dbContext.Recipes.All((Recipe recipe) => recipe.Owner.UserID == id);
-
-            if (recipes == true)
-            {
-                return Results.BadRequest("This user still owns recipes. Delete those first.");
-            }
-
-            dbContext.Users.Remove(user);
-            dbContext.SaveChanges();
+            await dbContext.Users
+                            .Where(user => user.UserID == id)
+                            .ExecuteDeleteAsync();
 
             return Results.NoContent();
         });
