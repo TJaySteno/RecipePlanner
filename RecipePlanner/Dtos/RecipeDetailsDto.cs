@@ -7,9 +7,9 @@ namespace RecipePlanner.Dtos;
 // A DTO is a contract between the client and server since it represents
 // a shared agreement about how data wil be transferred and used.
 
-public record RecipeDto (
+public record RecipeDetailsDto (
     [Required] int RecipeID,
-    [Required] User Owner,
+    [Required] int OwnerID,
     [Required][StringLength(50)] string Name,
     [StringLength(255)] string? Description,
     [StringLength(255)] string? Url,

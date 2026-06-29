@@ -33,12 +33,11 @@ public static class UsersEndpoints
         {
             UserDto user = new (
                 users.Max(user => user.UserID) + 1,
-                newUser.FirstName,
-                newUser.MiddleName,
-                newUser.LastName,
                 newUser.PrimaryEmail,
                 newUser.Username,
-                newUser.PasswordHash
+                newUser.FirstName,
+                newUser.MiddleName,
+                newUser.LastName
             );
 
             users.Add(user);
@@ -58,12 +57,11 @@ public static class UsersEndpoints
 
             users[index] = new UserDto (
                 id,
-                updatedUser.FirstName,
-                updatedUser.MiddleName,
-                updatedUser.LastName,
                 updatedUser.PrimaryEmail,
                 updatedUser.Username,
-                users[index].PasswordHash
+                updatedUser.FirstName,
+                updatedUser.MiddleName,
+                updatedUser.LastName
             );
 
             return Results.NoContent();

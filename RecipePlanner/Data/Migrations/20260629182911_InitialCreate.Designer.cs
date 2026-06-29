@@ -11,7 +11,7 @@ using RecipePlanner.Data;
 namespace RecipePlanner.Data.Migrations
 {
     [DbContext(typeof(RecipePlannerContext))]
-    [Migration("20260625233334_InitialCreate")]
+    [Migration("20260629182911_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -26,98 +26,109 @@ namespace RecipePlanner.Data.Migrations
 
             modelBuilder.Entity("RecipePlanner.Models.Recipe", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("RecipeID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecipeID"));
 
-                    b.Property<int>("Calories")
+                    b.Property<int?>("Calories")
                         .HasColumnType("int");
 
-                    b.Property<int>("CarbsInGrams")
+                    b.Property<int?>("CarbsInGrams")
                         .HasColumnType("int");
 
-                    b.Property<int>("CookTimeInMinutes")
+                    b.Property<int?>("CookTimeInMinutes")
                         .HasColumnType("int");
 
-                    b.Property<int>("CoolTimeInMinutes")
+                    b.Property<int?>("CoolTimeInMinutes")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("Difficulty")
+                    b.Property<int?>("Difficulty")
                         .HasColumnType("int");
 
-                    b.Property<int>("FatInGrams")
+                    b.Property<int?>("FatInGrams")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("OwnerID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PrepTimeInMinutes")
+                    b.Property<int>("OwnerUserID")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProteinInGrams")
+                    b.Property<int?>("PrepTimeInMinutes")
                         .HasColumnType("int");
 
-                    b.Property<float>("Rating")
+                    b.Property<int?>("ProteinInGrams")
+                        .HasColumnType("int");
+
+                    b.Property<float?>("Rating")
                         .HasColumnType("real");
 
-                    b.Property<int>("Servings")
+                    b.Property<int?>("Servings")
                         .HasColumnType("int");
 
                     b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
-                    b.HasKey("ID");
+                    b.HasKey("RecipeID");
+
+                    b.HasIndex("OwnerUserID");
 
                     b.ToTable("Recipes");
                 });
 
             modelBuilder.Entity("RecipePlanner.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("UserID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"));
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PrimaryEmail")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserID");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("RecipePlanner.Models.Recipe", b =>
+                {
+                    b.HasOne("RecipePlanner.Models.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerUserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 #pragma warning restore 612, 618
         }

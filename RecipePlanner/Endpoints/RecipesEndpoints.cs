@@ -1,4 +1,7 @@
-﻿using RecipePlanner.Dtos;
+﻿using Microsoft.VisualBasic;
+using RecipePlanner.Data;
+using RecipePlanner.Dtos;
+using RecipePlanner.Models;
 
 namespace RecipePlanner.Endpoints;
 
@@ -25,27 +28,46 @@ public static class RecipesEndpoints
             .WithName(GetRecipeRouteName);
 
         // POST /recipes
-        recipesGroup.MapPost("", (CreateRecipeDto newRecipe) =>
+        recipesGroup.MapPost("", (CreateRecipeDto newRecipe, RecipePlannerContext dbContext) =>
             {
-                RecipeDto recipe = new(
-                    recipes.Max(recipe => recipe.RecipeID) + 1,
-                    newRecipe.OwnerID,
-                    newRecipe.Name,
-                    newRecipe.Description,
-                    newRecipe.Url,
-                    newRecipe.Rating,
-                    newRecipe.Difficulty,
-                    newRecipe.PrepTimeInMinutes,
-                    newRecipe.CookTimeInMinutes,
-                    newRecipe.CoolTimeInMinutes,
-                    newRecipe.Servings,
-                    newRecipe.Calories,
-                    newRecipe.ProteinInGrams,
-                    newRecipe.CarbsInGrams,
-                    newRecipe.FatInGrams
-                );
+                Recipe recipe = new()
+                {
+                    Owner = newRecipe.Owner,
+                    Name = newRecipe.Name,
+                    Description = newRecipe.Description,
+                    Url = newRecipe.Url,
+                    Rating = newRecipe.Rating,
+                    Difficulty = newRecipe.Difficulty,
+                    PrepTimeInMinutes = newRecipe.PrepTimeInMinutes,
+                    CookTimeInMinutes = newRecipe.CookTimeInMinutes,
+                    CoolTimeInMinutes = newRecipe.CoolTimeInMinutes,
+                    Servings = newRecipe.Servings,
+                    Calories = newRecipe.Calories,
+                    ProteinInGrams = newRecipe.ProteinInGrams,
+                    CarbsInGrams = newRecipe.CarbsInGrams,
+                    FatInGrams = newRecipe.FatInGrams
+                };
 
-                recipes.Add(recipe);
+                dbContext.Recipes.Add(recipe);
+                dbContext.SaveChanges();
+
+                RecipeDetailsDto recipeDto = new(
+                    recipe.RecipeID,
+                    recipe.Owner.UserID,
+                    recipe.Name,
+                    recipe.Description,
+                    recipe.Url,
+                    recipe.Rating,
+                    recipe.Difficulty,
+                    recipe.PrepTimeInMinutes,
+                    recipe.CookTimeInMinutes,
+                    recipe.CoolTimeInMinutes,
+                    recipe.Servings,
+                    recipe.Calories,
+                    recipe.ProteinInGrams,
+                    recipe.CarbsInGrams,
+                    recipe.FatInGrams
+                );
 
                 return Results.CreatedAtRoute(GetRecipeRouteName, new { id = recipe.RecipeID }, recipe);
             });
@@ -62,7 +84,7 @@ public static class RecipesEndpoints
 
                 recipes[index] = new RecipeDto (
                     id,
-                    updatedRecipe.OwnerID,
+                    updatedRecipe.Owner,
                     updatedRecipe.Name,
                     updatedRecipe.Description,
                     updatedRecipe.Url,
