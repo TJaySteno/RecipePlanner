@@ -2,6 +2,7 @@
 using RecipePlanner.Data;
 using RecipePlanner.Dtos;
 using RecipePlanner.Models;
+using System.Security.Claims;
 
 namespace RecipePlanner.Endpoints;
 
@@ -42,8 +43,14 @@ public static class UsersEndpoints
         .WithName(GetUserRouteName);
 
         // POST /users
-        usersGroup.MapPost("", async (CreateUserDto newUser, RecipePlannerContext dbContext) =>
+        usersGroup.MapPost("", async (
+            CreateUserDto newUser,
+            RecipePlannerContext dbContext,
+            ClaimsPrincipal token) =>
         {
+            ArgumentNullException.ThrowIfNull(token.Identity?.Name);
+            var username = token.Identity.Name;
+
             User user = new()
             {
                 PrimaryEmail = newUser.PrimaryEmail,
@@ -70,8 +77,15 @@ public static class UsersEndpoints
         });
 
         // PUT /users/{id}
-        usersGroup.MapPut("/{id}", async (int id, UpdateUserDto updatedUser, RecipePlannerContext dbContext) =>
+        usersGroup.MapPut("/{id}", async (
+            int id,
+            UpdateUserDto updatedUser,
+            RecipePlannerContext dbContext,
+            ClaimsPrincipal token) =>
         {
+            ArgumentNullException.ThrowIfNull(token.Identity?.Name);
+            var username = token.Identity.Name;
+
             var user = dbContext.Users.FindAsync(id).Result;
 
             if (user == null)

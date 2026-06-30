@@ -13,5 +13,12 @@ public static class Endpoints
 
         // GET /login
         app.MapGet("/login", () => "Login screen.");
+
+        // GET /admin
+        app.MapGet("/admin", () => "Admin page.")
+        .RequireAuthorization(policy =>
+        {
+            policy.RequireRole("admin");
+        });
     }
 }

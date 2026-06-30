@@ -11,7 +11,7 @@ using RecipePlanner.Data;
 namespace RecipePlanner.Data.Migrations
 {
     [DbContext(typeof(RecipePlannerContext))]
-    [Migration("20260629182911_InitialCreate")]
+    [Migration("20260630200415_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -116,6 +116,12 @@ namespace RecipePlanner.Data.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("UserID");
+
+                    b.HasIndex("PrimaryEmail")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

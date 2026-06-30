@@ -1,7 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace RecipePlanner.Models;
 
+// Todo: I don't think these are working.
+[Index(nameof(PrimaryEmail), IsUnique = true)]
+[Index(nameof(Username), IsUnique = true)]
 public class User
 {
     public int UserID { get; set; }
@@ -29,6 +33,4 @@ public class User
     [ScaffoldColumn(true)]
     [StringLength(100, ErrorMessage = "The {0} value cannot exceed {1} characters.")]
     public string? LastName { get; set; }
-
-    // Todo: Authorize User Method
 }

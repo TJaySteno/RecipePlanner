@@ -63,6 +63,18 @@ namespace RecipePlanner.Data.Migrations
                 name: "IX_Recipes_OwnerUserID",
                 table: "Recipes",
                 column: "OwnerUserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_PrimaryEmail",
+                table: "Users",
+                column: "PrimaryEmail",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Username",
+                table: "Users",
+                column: "Username",
+                unique: true);
         }
 
         /// <inheritdoc />

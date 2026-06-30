@@ -2,6 +2,7 @@
 using RecipePlanner.Data;
 using RecipePlanner.Dtos;
 using RecipePlanner.Models;
+using System.Security.Claims;
 
 namespace RecipePlanner.Endpoints;
 
@@ -13,9 +14,10 @@ public static class RecipesEndpoints
     {
         var recipesGroup = app.MapGroup("/recipes");
 
-        // GET /recipes
+        // GET /recipes - Pulls all recipes
         recipesGroup.MapGet("/", async (RecipePlannerContext dbContext) =>
             await dbContext.Recipes
+                            .AsNoTracking()
                             .Include(recipe => recipe.Owner)
                             .Select(recipe => new RecipeDto(
                                     recipe.RecipeID,
@@ -34,11 +36,44 @@ public static class RecipesEndpoints
                                     recipe.CarbsInGrams,
                                     recipe.FatInGrams
                             ))
-                            .AsNoTracking()
                             .ToListAsync());
 
-        // GET /recipes/{id}
-        recipesGroup.MapGet("/{id}", async (int id, RecipePlannerContext dbContext) =>
+        // GET /mine - Pulls all of a User's recipes
+        recipesGroup.MapGet("/mine", async (
+            RecipePlannerContext dbContext,
+            ClaimsPrincipal token) =>
+        {
+            ArgumentNullException.ThrowIfNull(token.Identity?.Name);
+            var username = token.Identity.Name;
+
+            return await dbContext.Recipes
+                            .AsNoTracking()
+                            .Where(recipe => recipe.Owner.Username == username)
+                            .Include(recipe => recipe.Owner)
+                            .Select(recipe => new RecipeDto(
+                                    recipe.RecipeID,
+                                    recipe.Owner,
+                                    recipe.Name,
+                                    recipe.Description,
+                                    recipe.Url,
+                                    recipe.Rating,
+                                    recipe.Difficulty,
+                                    recipe.PrepTimeInMinutes,
+                                    recipe.CookTimeInMinutes,
+                                    recipe.CoolTimeInMinutes,
+                                    recipe.Servings,
+                                    recipe.Calories,
+                                    recipe.ProteinInGrams,
+                                    recipe.CarbsInGrams,
+                                    recipe.FatInGrams
+                            ))
+                            .ToListAsync();
+        });
+
+        // GET /recipes/{id} - Pulls a specific recipe
+        recipesGroup.MapGet("/{id}", async (
+            int id,
+            RecipePlannerContext dbContext) =>
         {
             var recipe = await dbContext.Recipes
                 .Include(recipe => recipe.Owner)
@@ -69,13 +104,29 @@ public static class RecipesEndpoints
         .WithName(GetRecipeRouteName);
 
         // POST /recipes
-        recipesGroup.MapPost("", async (CreateRecipeDto newRecipe, RecipePlannerContext dbContext) =>
+        recipesGroup.MapPost("", async (
+            CreateRecipeDto newRecipe,
+            RecipePlannerContext dbContext,
+            ClaimsPrincipal token) =>
         {
+            ArgumentNullException.ThrowIfNull(token.Identity?.Name);
+            var username = token.Identity.Name;
+
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return Results.Unauthorized();
+            }
+
             User? owner = await dbContext.Users.FindAsync(newRecipe.OwnerID);
             
             if (owner == null)
             {
                 return Results.NotFound();
+            }
+
+            if (owner.Username != username)
+            {
+                return Results.Forbid();
             }
 
             Recipe recipe = new()
@@ -118,29 +169,40 @@ public static class RecipesEndpoints
             );
 
             return Results.CreatedAtRoute(GetRecipeRouteName, new { id = recipeDto.RecipeID }, recipeDto);
+        })
+        .RequireAuthorization(policy =>
+        {
+            policy.RequireRole("user");
         });
 
         // PUT /recipes/{id}
         recipesGroup.MapPut("/{id}", async (
             int id,
             UpdateRecipeDto updatedRecipe,
-            RecipePlannerContext dbContext) =>
+            RecipePlannerContext dbContext,
+            ClaimsPrincipal token) =>
         {
-            var recipe = await dbContext.Recipes.FindAsync(id);
+            var username = token.Identity?.Name;
 
-            User? owner = await dbContext.Users.FindAsync(updatedRecipe.OwnerID);
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return Results.Unauthorized();
+            }
 
-            if (owner == null)
+            var recipe = await dbContext.Recipes
+                                        .Include(recipe => recipe.Owner)
+                                        .FirstOrDefaultAsync(recipe => recipe.RecipeID == id);
+
+            if (recipe == null || recipe.Owner == null)
             {
                 return Results.NotFound();
             }
 
-            if (recipe == null)
+            if (recipe.Owner.Username != username)
             {
-                return Results.NotFound();
+                return Results.Forbid();
             }
 
-            recipe.Owner = owner;
             recipe.Name = updatedRecipe.Name;
             recipe.Description = updatedRecipe.Description;
             recipe.Url = updatedRecipe.Url;
@@ -158,16 +220,43 @@ public static class RecipesEndpoints
             await dbContext.SaveChangesAsync();
 
             return Results.NoContent();
-        });
+        })
+        .RequireAuthorization(policy => { policy.RequireRole("user"); });
 
         // DELETE /recipes/{id}
-        recipesGroup.MapDelete("/{id}", async (int id, RecipePlannerContext dbContext) =>
+        recipesGroup.MapDelete("/{id}", async (
+            int id,
+            RecipePlannerContext dbContext,
+            ClaimsPrincipal token) =>
         {
+            var username = token.Identity?.Name;
+            bool isAdmin = token.IsInRole("admin");
+
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return Results.Unauthorized();
+            }
+
+            var recipe = await dbContext.Recipes
+                                        .Include(recipe => recipe.Owner)
+                                        .FirstOrDefaultAsync(recipe => recipe.RecipeID == id);
+
+            if (recipe == null || recipe.Owner == null)
+            {
+                return Results.NotFound();
+            }
+
+            if (recipe.Owner.Username != username && !isAdmin)
+            {
+                return Results.Forbid();
+            }
+
             await dbContext.Recipes
                             .Where(recipe => recipe.RecipeID == id)
                             .ExecuteDeleteAsync();
 
             return Results.NoContent();
-        });
+        })
+        .RequireAuthorization(policy => { policy.RequireRole("user", "admin"); });
     }
 }

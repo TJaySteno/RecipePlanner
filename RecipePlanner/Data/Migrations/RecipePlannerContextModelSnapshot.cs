@@ -114,6 +114,12 @@ namespace RecipePlanner.Data.Migrations
 
                     b.HasKey("UserID");
 
+                    b.HasIndex("PrimaryEmail")
+                        .IsUnique();
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
                     b.ToTable("Users");
                 });
 
