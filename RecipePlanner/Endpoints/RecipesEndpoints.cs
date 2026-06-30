@@ -109,22 +109,19 @@ public static class RecipesEndpoints
             RecipePlannerContext dbContext,
             ClaimsPrincipal token) =>
         {
-            ArgumentNullException.ThrowIfNull(token.Identity?.Name);
-            var username = token.Identity.Name;
-
-            if (string.IsNullOrWhiteSpace(username))
+            if (TokenNameIsNullOrWhiteSpace(token))
             {
                 return Results.Unauthorized();
             }
 
             User? owner = await dbContext.Users.FindAsync(newRecipe.OwnerID);
-            
+
             if (owner == null)
             {
                 return Results.NotFound();
             }
 
-            if (owner.Username != username)
+            if (!UsernamesMatch(owner, token))
             {
                 return Results.Forbid();
             }
@@ -182,9 +179,7 @@ public static class RecipesEndpoints
             RecipePlannerContext dbContext,
             ClaimsPrincipal token) =>
         {
-            var username = token.Identity?.Name;
-
-            if (string.IsNullOrWhiteSpace(username))
+            if (TokenNameIsNullOrWhiteSpace(token))
             {
                 return Results.Unauthorized();
             }
@@ -198,7 +193,7 @@ public static class RecipesEndpoints
                 return Results.NotFound();
             }
 
-            if (recipe.Owner.Username != username)
+            if (!UsernamesMatch(recipe.Owner, token))
             {
                 return Results.Forbid();
             }
@@ -229,10 +224,7 @@ public static class RecipesEndpoints
             RecipePlannerContext dbContext,
             ClaimsPrincipal token) =>
         {
-            var username = token.Identity?.Name;
-            bool isAdmin = token.IsInRole("admin");
-
-            if (string.IsNullOrWhiteSpace(username))
+            if (TokenNameIsNullOrWhiteSpace(token))
             {
                 return Results.Unauthorized();
             }
@@ -246,7 +238,7 @@ public static class RecipesEndpoints
                 return Results.NotFound();
             }
 
-            if (recipe.Owner.Username != username && !isAdmin)
+            if (!UsernamesMatch(recipe.Owner, token) && !IsAdmin(token))
             {
                 return Results.Forbid();
             }
@@ -258,5 +250,23 @@ public static class RecipesEndpoints
             return Results.NoContent();
         })
         .RequireAuthorization(policy => { policy.RequireRole("user", "admin"); });
+    }
+
+    private static bool TokenNameIsNullOrWhiteSpace(ClaimsPrincipal token)
+    {
+        var username = token.Identity?.Name;
+        
+        ArgumentNullException.ThrowIfNull(username);
+
+        return string.IsNullOrWhiteSpace(username);
+    }
+
+    private static bool IsAdmin(ClaimsPrincipal token) {
+        return token.IsInRole("admin");
+    }
+
+    private static bool UsernamesMatch(User owner, ClaimsPrincipal token)
+    {
+        return owner.Username == token.Identity?.Name;
     }
 }

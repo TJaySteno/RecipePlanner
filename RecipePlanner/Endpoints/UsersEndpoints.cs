@@ -15,7 +15,9 @@ public static class UsersEndpoints
         var usersGroup = app.MapGroup("/users");
 
         //GET /users
-        usersGroup.MapGet("/", async (RecipePlannerContext dbContext) =>
+        usersGroup.MapGet("/", async (
+                RecipePlannerContext dbContext,
+                ClaimsPrincipal token) =>
             await dbContext.Users
                             .Select(user => new UserDto(
                                 user.UserID,
@@ -25,22 +27,27 @@ public static class UsersEndpoints
                                 user.MiddleName,
                                 user.LastName
                             ))
-                            .ToListAsync());
+                            .ToListAsync())
+            .RequireAuthorization(policy => { policy.RequireRole("user", "admin"); });
 
         // Redirect to either /login or /users/{id}
         // ApiController.RedirectToRoute(String, Object) Method
         // https://learn.microsoft.com/en-us/dotnet/api/system.web.http.apicontroller.redirecttoroute?view=aspnetcore-2.2
 
         // GET /users/{id}
-        usersGroup.MapGet("/{id}", async (int id, RecipePlannerContext dbContext) =>
-        {
-            var user = await dbContext.Users.FindAsync(id);
+        usersGroup.MapGet("/{id}", async (
+                int id,
+                RecipePlannerContext dbContext,
+                ClaimsPrincipal token) =>
+            {
+                var user = await dbContext.Users.FindAsync(id);
 
-            return user is null
-                ? Results.NotFound()
-                : Results.Ok(user);
-        })
-        .WithName(GetUserRouteName);
+                return user is null
+                    ? Results.NotFound()
+                    : Results.Ok(user);
+            })
+            .WithName(GetUserRouteName)
+            .RequireAuthorization(policy => { policy.RequireRole("user", "admin"); }); ;
 
         // POST /users
         usersGroup.MapPost("", async (
@@ -48,8 +55,13 @@ public static class UsersEndpoints
             RecipePlannerContext dbContext,
             ClaimsPrincipal token) =>
         {
-            ArgumentNullException.ThrowIfNull(token.Identity?.Name);
-            var username = token.Identity.Name;
+            bool IsAuthenticated = token.Identity?.IsAuthenticated ?? false;
+
+            // Only new users and Admins can create new users.
+            if (IsAuthenticated && !IsAdmin(token))
+            {
+                return Results.Forbid();
+            }
 
             User user = new()
             {
@@ -83,14 +95,22 @@ public static class UsersEndpoints
             RecipePlannerContext dbContext,
             ClaimsPrincipal token) =>
         {
-            ArgumentNullException.ThrowIfNull(token.Identity?.Name);
-            var username = token.Identity.Name;
+            if (TokenNameIsNullOrWhiteSpace(token))
+            {
+                return Results.Unauthorized();
+            }
 
-            var user = dbContext.Users.FindAsync(id).Result;
+            var user = await dbContext.Users
+                                      .FirstOrDefaultAsync(user => user.UserID == id);
 
             if (user == null)
             {
                 return Results.NotFound();
+            }
+
+            if (!IsAdmin(token) && !UsernamesMatch(user, token))
+            {
+                return Results.Forbid();
             }
 
             user.PrimaryEmail = updatedUser.PrimaryEmail;
@@ -102,16 +122,58 @@ public static class UsersEndpoints
             await dbContext.SaveChangesAsync();
 
             return Results.NoContent();
-        });
+        })
+        .RequireAuthorization(policy => { policy.RequireRole("user", "admin"); });
 
         // DELETE /users/{id}
-        usersGroup.MapDelete("/{id}", async (int id, RecipePlannerContext dbContext) =>
+        usersGroup.MapDelete("/{id}", async (
+            int id,
+            RecipePlannerContext dbContext,
+            ClaimsPrincipal token) =>
         {
+            if (TokenNameIsNullOrWhiteSpace(token))
+            {
+                return Results.Unauthorized();
+            }
+
+            var user = await dbContext.Users
+                                      .FirstOrDefaultAsync(user => user.UserID == id);
+
+            if (user == null)
+            {
+                return Results.NotFound();
+            }
+
+            if (!UsernamesMatch(user, token) && !IsAdmin(token))
+            {
+                return Results.Forbid();
+            }
+
             await dbContext.Users
-                            .Where(user => user.UserID == id)
-                            .ExecuteDeleteAsync();
+                           .Where(user => user.UserID == id)
+                           .ExecuteDeleteAsync();
 
             return Results.NoContent();
-        });
+        })
+        .RequireAuthorization(policy => { policy.RequireRole("user", "admin"); });
+    }
+
+    private static bool TokenNameIsNullOrWhiteSpace(ClaimsPrincipal token)
+    {
+        var username = token.Identity?.Name;
+
+        ArgumentNullException.ThrowIfNull(username);
+
+        return string.IsNullOrWhiteSpace(username);
+    }
+
+    private static bool IsAdmin(ClaimsPrincipal token)
+    {
+        return token.IsInRole("admin");
+    }
+
+    private static bool UsernamesMatch(User owner, ClaimsPrincipal token)
+    {
+        return owner.Username == token.Identity?.Name;
     }
 }

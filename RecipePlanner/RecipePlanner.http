@@ -2,7 +2,7 @@
 
 
 ### // GET /
-### No auth requested
+### No auth needed, 200.
 GET {{RecipePlanner_HostAddress}}
 
 
@@ -11,13 +11,13 @@ GET {{RecipePlanner_HostAddress}}
 ###############
 
 ### // GET /recipes
-### No auth requested
+### No auth needed, 200.
 GET {{RecipePlanner_HostAddress}}/recipes
 
 
 
 ### // GET /recipes/mine
-### No auth. Should fail. (Todo: Redirect to /login?)
+### No auth, 500 ArgumentNullException. (Todo: Redirect to /login?)
 GET {{RecipePlanner_HostAddress}}/recipes/mine
 
 ### Should succeed (Auth = lskywalker, user)
@@ -27,7 +27,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6I
 
 
 ### // GET /recipes/{id}
-### No auth requested
+### No auth needed, 200.
 GET {{RecipePlanner_HostAddress}}/recipes/1
 
 
@@ -54,7 +54,7 @@ Content-Type: application/json
   "fatInGrams": 14
 }
 
-### Luke posting as himself. (Auth = lskywalker, user)
+### Luke posting as himself, 201 Created. (Auth = lskywalker, user)
 POST {{RecipePlanner_HostAddress}}/recipes
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
 Content-Type: application/json
@@ -76,7 +76,7 @@ Content-Type: application/json
   "fatInGrams": 14
 }
 
-### lskywalker, but the recipe says he's jsnow. 403 Forbidden.
+### Luke posting under Jon. 403 Forbidden.
 POST {{RecipePlanner_HostAddress}}/recipes
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
 Content-Type: application/json
@@ -170,7 +170,7 @@ Content-Type: application/json
 DELETE {{RecipePlanner_HostAddress}}/recipes/4
 
 ### Luke deleting his own recipe, 204 Success. (Auth = lskywalker, user)
-DELETE {{RecipePlanner_HostAddress}}/recipes/4
+DELETE {{RecipePlanner_HostAddress}}/recipes/6
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
 
 ### Luke deleting jsnow's recipe, 403 Forbidden. (Auth = lskywalker, user)
@@ -178,7 +178,7 @@ DELETE {{RecipePlanner_HostAddress}}/recipes/3
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
 
 ### Admin deleting Luke's recipe, 204 Success. (Auth = sstark, admin)
-DELETE {{RecipePlanner_HostAddress}}/recipes/5
+DELETE {{RecipePlanner_HostAddress}}/recipes/7
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
 
 
@@ -193,35 +193,35 @@ GET {{RecipePlanner_HostAddress}}/recipes
 #############
 
 ### GET /users
-### No auth should fail
+### No auth, 401 Unauthorized (Todo: Redirect to /login?)
 GET {{RecipePlanner_HostAddress}}/users
 
-### user auth should pull all
+### User auth should pull all, 200. (Auth = lskywalker, user)
 GET {{RecipePlanner_HostAddress}}/users
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
 
-### Admin auth should pull all
+### Admin auth should pull all, 200. (Auth = sstark, admin)
 GET {{RecipePlanner_HostAddress}}/users
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
 
 
 
-### GET /users
-### No auth should fail
+### GET /users/{id}
+### No auth, 401 Unauthorized (Todo: Redirect to /login?)
 GET {{RecipePlanner_HostAddress}}/users/1
 
-### user auth should pull anyone (Todo: Unless hidden?)
+### User auth should pull anyone, 200. (Auth = lskywalker, user) (Todo: Unless hidden?)
 GET {{RecipePlanner_HostAddress}}/users/1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
 
-### Admin auth should pull anyone
+### Admin auth should pull anyone, 200. (Auth = sstark, admin)
 GET {{RecipePlanner_HostAddress}}/users/1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
 
 
 
 ### POST /users
-### No auth should succeed
+### No auth, 201 Created. Can create your own user.
 POST {{RecipePlanner_HostAddress}}/users
 Content-Type: application/json
 
@@ -234,20 +234,22 @@ Content-Type: application/json
   "lastName": "Potter"
 }
 
-### Re-posting a duplicate Username or Password should fail
+### POST /users
+### Posting duplicate Username or Password fails, 500 DbUpdateException
 POST {{RecipePlanner_HostAddress}}/users
 Content-Type: application/json
 
 {
-  "primaryEmail": "hpotter@hogwarts.uk",
-  "username": "hpotter",
+  "primaryEmail": "rweasley@hogwarts.uk",
+  "username": "rweasley",
   "passwordHash": "placeholder",
   "firstName": "Harry",
   "middleName": "James",
   "lastName": "Potter"
 }
 
-### User auth should fail
+### POST /users
+### Role User can't create users, 403 Forbidden.
 POST {{RecipePlanner_HostAddress}}/users
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
@@ -261,7 +263,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6I
   "lastName": "Potter"
 }
 
-### Admin auth should fail
+### POST /users
+### Admins can create users, 201 Created.
 POST {{RecipePlanner_HostAddress}}/users
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
@@ -278,9 +281,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6I
 
 
 ### PUT /users/{id}
-### No auth should fail
+### No auth, 401 Unauthorized
 PUT {{RecipePlanner_HostAddress}}/users/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRyZW50Iiwic3ViIjoidHJlbnQiLCJqdGkiOiI1YzE2MzMwYyIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg0MDQ3MSwiZXhwIjoxNzkwNzg5MjcxLCJpYXQiOjE3ODI4NDA0NzIsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.zGh9A5UIndmRpcDBy8Lz1WgvGhscMJlu8_fzd08oh9Y
 Content-Type: application/json
 
 {
@@ -291,9 +293,10 @@ Content-Type: application/json
     "lastName": "Skywalker"
 }
 
-### User auth should update itself
+### PUT /users/{id}
+### Users can update themselves, 204.
 PUT {{RecipePlanner_HostAddress}}/users/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRyZW50Iiwic3ViIjoidHJlbnQiLCJqdGkiOiI1YzE2MzMwYyIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg0MDQ3MSwiZXhwIjoxNzkwNzg5MjcxLCJpYXQiOjE3ODI4NDA0NzIsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.zGh9A5UIndmRpcDBy8Lz1WgvGhscMJlu8_fzd08oh9Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
 Content-Type: application/json
 
 {
@@ -304,9 +307,10 @@ Content-Type: application/json
     "lastName": "Skywalker"
 }
 
-### User auth should NOT update someone else
+### PUT /users/{id}
+### Users can NOT update others, 403 Forbidden.
 PUT {{RecipePlanner_HostAddress}}/users/3
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRyZW50Iiwic3ViIjoidHJlbnQiLCJqdGkiOiI1YzE2MzMwYyIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg0MDQ3MSwiZXhwIjoxNzkwNzg5MjcxLCJpYXQiOjE3ODI4NDA0NzIsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.zGh9A5UIndmRpcDBy8Lz1WgvGhscMJlu8_fzd08oh9Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
 Content-Type: application/json
 
 {
@@ -317,7 +321,8 @@ Content-Type: application/json
     "lastName": "Skywalker"
 }
 
-### Admin auth should update anyone
+### PUT /users/{id}
+### Admins can update anyone, 204. (Auth = sstark, admin)
 PUT {{RecipePlanner_HostAddress}}/users/1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
 Content-Type: application/json
@@ -333,19 +338,19 @@ Content-Type: application/json
 
 
 ### DELETE /users/{id}
-### No auth should fail
+### No auth, 401 Unauthorized
 DELETE {{RecipePlanner_HostAddress}}/users/4
 
-### Users can NOT delete others (Auth = lskywalker, user; deleting hpotter)
-DELETE {{RecipePlanner_HostAddress}}/users/4
+### Users can NOT delete others, 403 Forbidden. (Auth = lskywalker, user; deleting hpotter)
+DELETE {{RecipePlanner_HostAddress}}/users/6
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
+
+### Users can delete themselves, 204. (Auth = hpotter, user; deleting hpotter)
+DELETE {{RecipePlanner_HostAddress}}/users/10
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imhwb3R0ZXIiLCJzdWIiOiJocG90dGVyIiwianRpIjoiNzQyNzhlYzgiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTIwOSwiZXhwIjoxNzkwODAwMDA5LCJpYXQiOjE3ODI4NTEyMTAsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.90IcV-dCkj06WGSl2ajiAiHecLVIjxLS31i5L36yWC0
 
-### Users can delete themselves (Auth = hpotter, user; deleting hpotter)
-DELETE {{RecipePlanner_HostAddress}}/users/4
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imhwb3R0ZXIiLCJzdWIiOiJocG90dGVyIiwianRpIjoiNzQyNzhlYzgiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTIwOSwiZXhwIjoxNzkwODAwMDA5LCJpYXQiOjE3ODI4NTEyMTAsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.90IcV-dCkj06WGSl2ajiAiHecLVIjxLS31i5L36yWC0
-
-### Admin can delete anyone (Auth = sstark, admin; deleting hpotter)
-DELETE {{RecipePlanner_HostAddress}}/users/4
+### Admin can delete anyone, 204. (Auth = sstark, admin; deleting hpotter)
+DELETE {{RecipePlanner_HostAddress}}/users/11
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
 
 ### HELPER: If new Users are needed.
@@ -365,3 +370,4 @@ Content-Type: application/json
 
 ###
 GET {{RecipePlanner_HostAddress}}/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
