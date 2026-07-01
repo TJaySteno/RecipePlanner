@@ -104,7 +104,7 @@ public static class RecipesEndpoints
         .WithName(GetRecipeRouteName);
 
         // POST /recipes
-        recipesGroup.MapPost("", async (
+        recipesGroup.MapPost("/", async (
             CreateRecipeDto newRecipe,
             RecipePlannerContext dbContext,
             ClaimsPrincipal token) =>
@@ -167,10 +167,7 @@ public static class RecipesEndpoints
 
             return Results.CreatedAtRoute(GetRecipeRouteName, new { id = recipeDto.RecipeID }, recipeDto);
         })
-        .RequireAuthorization(policy =>
-        {
-            policy.RequireRole("user");
-        });
+        .RequireAuthorization(policy => { policy.RequireRole("admin", "user"); });
 
         // PUT /recipes/{id}
         recipesGroup.MapPut("/{id}", async (
@@ -216,7 +213,7 @@ public static class RecipesEndpoints
 
             return Results.NoContent();
         })
-        .RequireAuthorization(policy => { policy.RequireRole("user"); });
+        .RequireAuthorization(policy => { policy.RequireRole("admin", "user"); });
 
         // DELETE /recipes/{id}
         recipesGroup.MapDelete("/{id}", async (
@@ -249,7 +246,7 @@ public static class RecipesEndpoints
 
             return Results.NoContent();
         })
-        .RequireAuthorization(policy => { policy.RequireRole("user", "admin"); });
+        .RequireAuthorization(policy => { policy.RequireRole("admin", "user"); });
     }
 
     private static bool TokenNameIsNullOrWhiteSpace(ClaimsPrincipal token)

@@ -4,6 +4,7 @@ namespace RecipePlanner.Models;
 
 public class Recipe
 {
+    [Key]
     public int RecipeID { get; set; }
 
     public required User Owner { get; set; }
@@ -59,4 +60,6 @@ public class Recipe
     [ScaffoldColumn(true)]
     [Range(0, 1000, ErrorMessage = "The {0} value must be between {1} and {2} (inclusive).")]
     public int? FatInGrams { get; set; }
+
+    public ICollection<RecipeTag> RecipeTags { get; set; } = [];
 }

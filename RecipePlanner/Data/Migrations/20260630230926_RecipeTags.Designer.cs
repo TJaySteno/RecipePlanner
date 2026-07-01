@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RecipePlanner.Data;
 
@@ -10,9 +11,11 @@ using RecipePlanner.Data;
 namespace RecipePlanner.Data.Migrations
 {
     [DbContext(typeof(RecipePlannerContext))]
-    partial class RecipePlannerContextModelSnapshot : ModelSnapshot
+    [Migration("20260630230926_RecipeTags")]
+    partial class RecipeTags
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,57 +85,6 @@ namespace RecipePlanner.Data.Migrations
                     b.ToTable("Recipes");
                 });
 
-            modelBuilder.Entity("RecipePlanner.Models.RecipeTag", b =>
-                {
-                    b.Property<int>("RecipeID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TagID")
-                        .HasColumnType("int");
-
-                    b.HasKey("RecipeID", "TagID");
-
-                    b.HasIndex("TagID");
-
-                    b.ToTable("RecipeTags");
-                });
-
-            modelBuilder.Entity("RecipePlanner.Models.Tag", b =>
-                {
-                    b.Property<int>("TagID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TagID"));
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("CreatedByUserID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DisplayValue")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("ModifiedByUserID")
-                        .HasColumnType("int");
-
-                    b.HasKey("TagID");
-
-                    b.HasIndex("CreatedByUserID");
-
-                    b.HasIndex("ModifiedByUserID");
-
-                    b.HasIndex("DisplayValue", "Category")
-                        .IsUnique();
-
-                    b.ToTable("Tags");
-                });
-
             modelBuilder.Entity("RecipePlanner.Models.User", b =>
                 {
                     b.Property<int>("UserID")
@@ -183,50 +135,6 @@ namespace RecipePlanner.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("RecipePlanner.Models.RecipeTag", b =>
-                {
-                    b.HasOne("RecipePlanner.Models.Recipe", "Recipe")
-                        .WithMany("RecipeTags")
-                        .HasForeignKey("RecipeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RecipePlanner.Models.Tag", "Tag")
-                        .WithMany("RecipeTags")
-                        .HasForeignKey("TagID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Recipe");
-
-                    b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("RecipePlanner.Models.Tag", b =>
-                {
-                    b.HasOne("RecipePlanner.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserID");
-
-                    b.HasOne("RecipePlanner.Models.User", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedByUserID");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("ModifiedBy");
-                });
-
-            modelBuilder.Entity("RecipePlanner.Models.Recipe", b =>
-                {
-                    b.Navigation("RecipeTags");
-                });
-
-            modelBuilder.Entity("RecipePlanner.Models.Tag", b =>
-                {
-                    b.Navigation("RecipeTags");
                 });
 #pragma warning restore 612, 618
         }

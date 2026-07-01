@@ -188,6 +188,203 @@ GET {{RecipePlanner_HostAddress}}/recipes
 
 
 
+############
+### TAGS ###
+############
+
+### GET /tags
+### No auth, 200.
+GET {{RecipePlanner_HostAddress}}/tags
+
+
+
+### GET /tags/{id}
+### No auth, 200.
+GET {{RecipePlanner_HostAddress}}/tags/40
+
+
+
+
+### POST /tags
+### No auth, 401 Unauthorized
+POST {{RecipePlanner_HostAddress}}/tags
+Content-Type: application/json
+
+{
+  "displayValue": "Unauthorized",
+  "category": "Testing"
+}
+
+### User auth, 201 Created. (Auth = lskywalker, user)
+### Second time, 409 Conflict.
+POST {{RecipePlanner_HostAddress}}/tags
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
+
+{
+  "displayValue": "Users can add tags",
+  "category": "Testing"
+}
+
+### Admin auth, 201 Created. (Auth = sstark, admin)
+### Second time, 409 Conflict.
+POST {{RecipePlanner_HostAddress}}/tags
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
+
+{
+  "displayValue": "Admins can add tags too",
+  "category": "Testing"
+}
+
+
+
+
+### PUT /tags/{id}
+### No auth, 401 Unauthorized
+PUT {{RecipePlanner_HostAddress}}/tags/1
+Content-Type: application/json
+
+{
+  "displayValue": "Unauthorized",
+  "category": "Testing"
+}
+
+### User auth on his own tag, 204. (Auth = lskywalker, user)
+PUT {{RecipePlanner_HostAddress}}/tags/49
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
+
+{
+  "displayValue": "Good User Auth2",
+  "category": "Testing"
+}
+
+### User auth on NULL createdby, 403 Forbidden. (Auth = lskywalker, user)
+PUT {{RecipePlanner_HostAddress}}/tags/43
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
+
+{
+  "displayValue": "Good User Auth",
+  "category": "Testing"
+}
+
+### Admin auth on her own tag, 204. (Auth = sstark, admin)
+PUT {{RecipePlanner_HostAddress}}/tags/53
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
+
+{
+  "displayValue": "Admin User Auth3",
+  "category": "Testing"
+}
+
+### Admin auth on NULL createdby, 204. (Auth = sstark, admin)
+PUT {{RecipePlanner_HostAddress}}/tags/3
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
+
+{
+  "displayValue": "Admin User Auth2",
+  "category": "Testing"
+}
+
+### Admin auth changing to same name, 409 Conflict. (Auth = sstark, admin)
+PUT {{RecipePlanner_HostAddress}}/tags/5
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
+
+{
+  "displayValue": "Admin User Auth2",
+  "category": "Testing"
+}
+
+
+
+
+### PUT /tags/{id}
+### No auth, 401 Unauthorized
+DELETE {{RecipePlanner_HostAddress}}/tags/1
+
+### User auth on his own tag, 204. (Auth = lskywalker, user)
+DELETE {{RecipePlanner_HostAddress}}/tags/49
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
+
+### User auth on NULL createdby, 403 Forbidden. (Auth = lskywalker, user)
+DELETE {{RecipePlanner_HostAddress}}/tags/3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
+
+### Admin auth on her own tag, 204. (Auth = sstark, admin)
+DELETE {{RecipePlanner_HostAddress}}/tags/54
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
+
+### Admin auth on NULL createdby, 204. (Auth = sstark, admin)
+DELETE {{RecipePlanner_HostAddress}}/tags/8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
+
+
+
+###################
+### RECIPE TAGS ###
+###################
+
+### GET /recipes/{id}/tags
+### No auth, 200.
+GET {{RecipePlanner_HostAddress}}/recipes/2/tags
+
+
+
+### POST /recipes/{id}/tags
+### No auth, 401 Unauthorized
+POST {{RecipePlanner_HostAddress}}/recipes/2/tags
+Content-Type: application/json
+
+{
+  "tagID": "44"
+}
+
+### User auth, 201 Created. (Auth = lskywalker, user)
+### Second time, 409 Conflict.
+POST {{RecipePlanner_HostAddress}}/recipes/2/tags
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Imxza3l3YWxrZXIiLCJzdWIiOiJsc2t5d2Fsa2VyIiwianRpIjoiYTFkZmE0NjMiLCJyb2xlIjoidXNlciIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjUyNjkiLCJodHRwczovL2xvY2FsaG9zdDo3MDg0Il0sIm5iZiI6MTc4Mjg1MTI3NywiZXhwIjoxNzkwODAwMDc3LCJpYXQiOjE3ODI4NTEyNzgsImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.lalUfx5_yBWwsPGJb_y0PtVceCPEB2F9FlTOv9LZdao
+
+{
+  "tagID": "44"
+}
+### Admin auth, 201 Created. (Auth = sstark, admin)
+### Second time, 409 Conflict.
+POST {{RecipePlanner_HostAddress}}/recipes/2/tags
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
+
+{
+  "tagID": "44"
+}
+
+### No PUT needed; just POST/DELETE
+
+
+
+### DELETE /{id}
+### Delete tags from a recipe
+### Recipe Owner and Admins only
+
+### Clear Recipe Tag for testing (Auth = sstark, admin)
+DELETE {{RecipePlanner_HostAddress}}/recipes/2/tags/44
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNzdGFyayIsInN1YiI6InNzdGFyayIsImp0aSI6ImMyMTFkZTY5Iiwicm9sZSI6ImFkbWluIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6NTI2OSIsImh0dHBzOi8vbG9jYWxob3N0OjcwODQiXSwibmJmIjoxNzgyODUwNjg3LCJleHAiOjE3OTA3OTk0ODcsImlhdCI6MTc4Mjg1MDY4OCwiaXNzIjoiZG90bmV0LXVzZXItand0cyJ9.RRe8rBoj8qlBqC0KsuQud-mlwXX4QYvwtSyLMt_OTSQ
+
+
+
+### GET /recipes/{id}/tags
+### No auth, 200.
+GET {{RecipePlanner_HostAddress}}/recipes/2/tags
+
+
+
+
+
 #############
 ### USERS ###
 #############

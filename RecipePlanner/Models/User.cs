@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RecipePlanner.Models;
 
-// Todo: I don't think these are working.
 [Index(nameof(PrimaryEmail), IsUnique = true)]
 [Index(nameof(Username), IsUnique = true)]
 public class User
 {
+    [Key]
     public int UserID { get; set; }
 
     [ScaffoldColumn(true)]

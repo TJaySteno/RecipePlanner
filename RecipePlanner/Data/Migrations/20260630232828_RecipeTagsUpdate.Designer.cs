@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RecipePlanner.Data;
 
@@ -10,9 +11,11 @@ using RecipePlanner.Data;
 namespace RecipePlanner.Data.Migrations
 {
     [DbContext(typeof(RecipePlannerContext))]
-    partial class RecipePlannerContextModelSnapshot : ModelSnapshot
+    [Migration("20260630232828_RecipeTagsUpdate")]
+    partial class RecipeTagsUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,22 +113,12 @@ namespace RecipePlanner.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("CreatedByUserID")
-                        .HasColumnType("int");
-
                     b.Property<string>("DisplayValue")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("ModifiedByUserID")
-                        .HasColumnType("int");
-
                     b.HasKey("TagID");
-
-                    b.HasIndex("CreatedByUserID");
-
-                    b.HasIndex("ModifiedByUserID");
 
                     b.HasIndex("DisplayValue", "Category")
                         .IsUnique();
@@ -202,21 +195,6 @@ namespace RecipePlanner.Data.Migrations
                     b.Navigation("Recipe");
 
                     b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("RecipePlanner.Models.Tag", b =>
-                {
-                    b.HasOne("RecipePlanner.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserID");
-
-                    b.HasOne("RecipePlanner.Models.User", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedByUserID");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("ModifiedBy");
                 });
 
             modelBuilder.Entity("RecipePlanner.Models.Recipe", b =>
